@@ -1,6 +1,6 @@
-# desktop_helper
+![](https://raw.githubusercontent.com/yuanhoujun/material/main/DesktopHelper/logo/logo.png)
 
-A new flutter plugin project.
+A new desktop helper flutter plugin project.
 
 ## Getting Started
 
