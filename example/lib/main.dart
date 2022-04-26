@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:typed_data';
 
 import 'package:desktop_helper/desktop_helper.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +16,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String? _apps;
+  List<ApplicationInfo> _apps = [];
 
   @override
   void initState() {
@@ -39,8 +40,53 @@ class _MyAppState extends State<MyApp> {
           child: Column(
             children: [
               OutlinedButton(onPressed: () async {
-                await DesktopHelper.openFile(path: "/Users/ouyangfeng/Library/Containers/com.youngfeng.MacAppSample/Data/a.png");
-              }, child: const Text("Open file"))
+                await DesktopHelper.openFile(path: "/Users/ouyangfeng/Library/Containers/com.youngfeng.plugin.desktopHelperExample/Data");
+              }, child: const Text("Open file")),
+
+              OutlinedButton(onPressed: () async {
+                final apps = await DesktopHelper.getAppsForFile(path: "/Users/ouyangfeng/Downloads/a.mp4");
+                log("apps: $apps");
+                setState(() {
+                  if (apps.isNotEmpty) {
+                    _apps = apps;
+                  }
+                });
+              }, child: const Text("Get available apps")),
+
+              OutlinedButton(onPressed: () async {
+                bool result = await DesktopHelper.openFileWithApp(filePath: "/Users/ouyangfeng/Library/Containers/com.youngfeng.plugin.desktopHelperExample/Data/a.jpg",
+                                                    appUrl: "/System/Applications/Preview.app/");
+                                                    
+                                log("result: $result");
+              }, child: const Text("Open file with app")),
+
+              Column(
+                children: List.generate(_apps.length, (index) {
+                  final app = _apps[index];
+
+                  return Row(
+                    children: [
+                      Image.memory(Uint8List.fromList(app.icon)),
+
+                      Container(
+                        child: Text(
+                          app.name,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.red
+                          ),
+                          ),
+                        margin: const EdgeInsets.only(
+                          left: 10,
+                          right: 10
+                        ),
+                      ),
+
+                      Text("${app.bundleId}")
+                    ],
+                  );
+                }),
+              )
             ],
           ),
         ),
