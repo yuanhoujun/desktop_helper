@@ -1,32 +1,25 @@
-import 'dart:developer';
-import 'dart:typed_data';
-
-import 'package:desktop_helper/desktop_helper.dart';
+import 'package:desktop_helper_example/screen/get_apps_for_file_screen.dart';
+import 'package:desktop_helper_example/screen/open_file_screen.dart';
+import 'package:desktop_helper_example/screen/open_file_with_app_screen.dart';
 import 'package:flutter/material.dart';
-import 'dart:async';
+
 void main() {
-  runApp(const MyApp());
+  runApp(const MaterialApp(
+    home: App(),
+  ));
 }
 
-class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+class App extends StatefulWidget {
+  const App({Key? key}) : super(key: key);
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  State<App> createState() => _AppState();
 }
 
-class _MyAppState extends State<MyApp> {
-  List<ApplicationInfo> _apps = [];
-
+class _AppState extends State<App> {
   @override
   void initState() {
     super.initState();
-    initPlatformState();
-  }
-
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    if (!mounted) return;
   }
 
   @override
@@ -34,58 +27,58 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Plugin example app'),
+          title: const Text('Desktop Helper Sample'),
         ),
         body: Center(
           child: Column(
             children: [
-              OutlinedButton(onPressed: () async {
-                await DesktopHelper.openFile(path: "/Users/ouyangfeng/Library/Containers/com.youngfeng.plugin.desktopHelperExample/Data");
-              }, child: const Text("Open file")),
-
-              OutlinedButton(onPressed: () async {
-                final apps = await DesktopHelper.getAppsForFile(path: "/Users/ouyangfeng/Downloads/a.mp4");
-                log("apps: $apps");
-                setState(() {
-                  if (apps.isNotEmpty) {
-                    _apps = apps;
-                  }
-                });
-              }, child: const Text("Get available apps")),
-
-              OutlinedButton(onPressed: () async {
-                bool result = await DesktopHelper.openFileWithApp(filePath: "/Users/ouyangfeng/Library/Containers/com.youngfeng.plugin.desktopHelperExample/Data/a.jpg",
-                                                    appUrl: "/System/Applications/Preview.app/");
-                                                    
-                                log("result: $result");
-              }, child: const Text("Open file with app")),
-
-              Column(
-                children: List.generate(_apps.length, (index) {
-                  final app = _apps[index];
-
-                  return Row(
-                    children: [
-                      Image.memory(Uint8List.fromList(app.icon)),
-
-                      Container(
-                        child: Text(
-                          app.name,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.red
-                          ),
-                          ),
-                        margin: const EdgeInsets.only(
-                          left: 10,
-                          right: 10
-                        ),
-                      ),
-
-                      Text("${app.bundleId}")
-                    ],
-                  );
-                }),
+              Container(
+                child: OutlinedButton(
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return const OpenFileScreen();
+                    }));
+                  },
+                  child: const Text("Open file or directory"),
+                  style: ButtonStyle(
+                      fixedSize:
+                          MaterialStateProperty.all(const Size(200, 40))),
+                ),
+                margin: const EdgeInsets.only(top: 50),
+                height: 40,
+              ),
+              Container(
+                child: OutlinedButton(
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return const GetAppsForFileScreen();
+                    }));
+                  },
+                  child: const Text("Get apps for file"),
+                  style: ButtonStyle(
+                      fixedSize:
+                          MaterialStateProperty.all(const Size(200, 40))),
+                ),
+                margin: const EdgeInsets.only(top: 30),
+                height: 40,
+              ),
+              Container(
+                child: OutlinedButton(
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return const OpenFileWithAppScreen();
+                    }));
+                  },
+                  child: const Text("Open file with app"),
+                  style: ButtonStyle(
+                      fixedSize:
+                          MaterialStateProperty.all(const Size(200, 40))),
+                ),
+                margin: const EdgeInsets.only(top: 30),
+                height: 40,
               )
             ],
           ),
