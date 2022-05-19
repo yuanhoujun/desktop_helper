@@ -33,8 +33,6 @@ namespace
     void HandleMethodCall(
         const flutter::MethodCall<flutter::EncodableValue> &method_call,
         std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
-
-    
   };
 
   // static
@@ -80,14 +78,16 @@ namespace
       return;
     }
 
-    if (methodName.compare("getAppsForFile") == 0) {
+    if (methodName.compare("getAppsForFile") == 0)
+    {
       std::string path = std::get<std::string>(args.at(flutter::EncodableValue("path")));
       flutter::EncodableList apps = WindowsUtil::GetAssociateAppsWithFile(path);
       result->Success(apps);
       return;
     }
 
-    if (method_call.method_name().compare("getPlatformVersion") == 0) {
+    if (method_call.method_name().compare("getPlatformVersion") == 0)
+    {
       std::ostringstream version_stream;
       version_stream << "Windows ";
       if (IsWindows10OrGreater())
@@ -105,10 +105,34 @@ namespace
       result->Success(flutter::EncodableValue(version_stream.str()));
     }
 
+    if (methodName.compare("openFileWithApp") == 0)
+    {
+      std::string filePath = std::get<std::string>(args.at(flutter::EncodableValue("filePath")));
+      std::string appUrl = std::get<std::string>(args.at(flutter::EncodableValue("appUrl")));
+
+      std::string path = "\"";
+      path += filePath;
+      path += "\"";
+
+      std::cout << path << "-" << appUrl << endl;
+      LPCWSTR wstrPath = WindowsUtil::StringToLPCWSTR(path);
+      LPCWSTR wstrUrl = WindowsUtil::StringToLPCWSTR(appUrl);
+
+      // ShellExecute(NULL, NULL, (LPCWSTR)appUrl.c_str(), (LPCWSTR)filePath.c_str(), NULL, SW_SHOWNORMAL);
+      ShellExecute(NULL, NULL, wstrUrl, wstrPath, NULL, SW_SHOWNORMAL);
+
+      delete wstrPath;
+      delete wstrUrl;
+      wstrPath = nullptr;
+      wstrUrl = nullptr;
+      result->Success(true);
+
+      return;
+    }
+
     result->NotImplemented();
   }
 
- 
 } // namespace
 
 void DesktopHelperPluginRegisterWithRegistrar(
