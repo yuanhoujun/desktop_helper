@@ -143,7 +143,7 @@ namespace
 
     char *WindowsUtil::WcharToChar(wchar_t *str)
     {
-        int bufSize = WideCharToMultiByte(CP_ACP, NULL, str, -1, NULL, 0, NULL, FALSE);
+        int bufSize = WideCharToMultiByte(CP_UTF8, NULL, str, -1, NULL, 0, NULL, FALSE);
         char *ch = new char[bufSize];
         WideCharToMultiByte(CP_ACP, NULL, str, -1, ch, bufSize, NULL, FALSE);
         std::string(ch, bufSize);
